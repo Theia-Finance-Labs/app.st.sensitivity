@@ -1,3 +1,6 @@
+app/data/*
+!app/data/trisk_portfolio.xlsx
+
 # History files
 .Rhistory
 .Rapp.history
