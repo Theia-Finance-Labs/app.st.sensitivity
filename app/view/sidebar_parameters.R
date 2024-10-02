@@ -129,13 +129,13 @@ server <- function(id,
       )
     })
 
-    focus_country_r <- shiny::reactive({scenario_config_r()$country_choice})
+    selected_country_r <- shiny::reactive({scenario_config_r()$selected_country_r})
 
 
     return(
       list(
         "trisk_run_params_r"=trisk_run_params_r,
-        "focus_country_r" =focus_country_r
+        "selected_country_r" =selected_country_r
       )
     )
   })

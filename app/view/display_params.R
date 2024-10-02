@@ -69,6 +69,14 @@ server <- function(
         )
       })
   })
-  return(params_df_r)
+
+
+    displayed_params_df_r <- displayed_params$displayed_params_df_r
+    displayed_trajectories_r <- displayed_params$displayed_trajectories_r
+
+  return(list(
+    "displayed_params_df_r"=displayed_params_df_r,
+    "displayed_trajectories_r"=displayed_trajectories_r
+  ))
 
   })}

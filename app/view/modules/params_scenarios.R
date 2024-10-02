@@ -87,13 +87,13 @@ server <- function(id,
     # Synchronise the scenarios available depending on user scenario choice
     selected_baseline_r <- reactive({
       choice <- input$baseline_scenario
-      renamed_choice <- rename_string_vector(choice, words_class = "scenarios", dev_to_ux = FALSE)
-      return(renamed_choice)
+      # renamed_choice <- rename_string_vector(choice, words_class = "scenarios", dev_to_ux = FALSE)
+      return(choice)
     })
     selected_shock_r <- reactive({
       choice <- input$target_scenario
-      renamed_choice <- rename_string_vector(choice, words_class = "scenarios", dev_to_ux = FALSE)
-      return(renamed_choice)
+      # renamed_choice <- rename_string_vector(choice, words_class = "scenarios", dev_to_ux = FALSE)
+      return(choice)
     })
     selected_country_r <- reactive({
       choice <- input$country_choice
@@ -105,7 +105,8 @@ server <- function(id,
     scenario_config_r <- reactive({
       reactiveValues(
         baseline_scenario = selected_baseline_r(),
-        target_scenario = selected_shock_r()
+        target_scenario = selected_shock_r(),
+selected_country_r=selected_country_r()
       )
     })
 
@@ -130,10 +131,11 @@ update_scenarios_dropdowns <- function(input, session,
       dplyr::pull()
 
     # rename the scenarios to front end appropriate name
-    new_choices <- rename_string_vector(possible_baselines, words_class = "scenarios")|>
-      sort()
-
-    # Update target_scenario dropdown with unique values from the filtered data
+    # new_choices <- rename_string_vector(possible_baselines, words_class = "scenarios")|>
+    #   sort()
+    new_choices <- possible_baselines|>sort()
+    
+        # Update target_scenario dropdown with unique values from the filtered data
     update_dropdown_input(session, "baseline_scenario", choices = new_choices)
   })
 
@@ -149,9 +151,10 @@ update_scenarios_dropdowns <- function(input, session,
       dplyr::pull()
 
 
-    # rename the scenarios to front end appropriate name
-    new_choices <- rename_string_vector(possible_shocks, words_class = "scenarios")|>
-      sort()
+    # # rename the scenarios to front end appropriate name
+    # new_choices <- rename_string_vector(possible_shocks, words_class = "scenarios")|>
+    #   sort()
+    new_choices <- possible_shocks|>sort()
 
     # Update target_scenario dropdown with unique values from the filtered data
     update_dropdown_input(session, "target_scenario", choices = new_choices)

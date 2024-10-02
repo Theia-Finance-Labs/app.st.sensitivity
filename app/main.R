@@ -28,6 +28,7 @@ box::use(
   app/view/display_params,
   app/view/sidebar_parameters,
   app/view/trisk_button,
+  app/view/plots_trajectories
 )
 
 
@@ -87,7 +88,8 @@ ui <- function(id) {
       dashboardBody(
       shiny::tags$div(
         class = "ui stackable grid",
-        display_params$ui(ns("display_params"))
+        display_params$ui(ns("display_params")),
+        plots_trajectories$ui(ns("plots_trajectories"))
         )
       )
     )
@@ -135,13 +137,8 @@ server <- function(id) {
       hide_vars = HIDE_VARS 
     )
 
-
-
     trisk_run_params_r <- perimeter$trisk_run_params_r
-    focus_country_r <- perimeter$focus_country_r
-    
-    
-
+    selected_country_r <- perimeter$selected_country_r
 
     st_results_r <- trisk_button$server(
       "trisk_button",
@@ -150,11 +147,22 @@ server <- function(id) {
       financial_data = financial_data,
       carbon_data = carbon_data,
       trisk_run_params_r = trisk_run_params_r,
-      focus_country_r=focus_country_r
+      selected_country_r=selected_country_r
     )
+
     params_df_r <- st_results_r$params_df_r
     companies_trajectories_r <- st_results_r$companies_trajectories_r
-    params_df_r <- display_params$server("display_params", params_df_r)
+    
+    displayed_params <- display_params$server("display_params", params_df_r, companies_trajectories_r)
+
+    displayed_params_df_r <- displayed_params$displayed_params_df_r
+    displayed_trajectories_r <- displayed_params$displayed_trajectories_r
+
+    # Generate trajectories plots
+    plots_trajectories$server(
+      "plots_trajectories",
+      trajectories_data_r = displayed_trajectories_r
+    )
 
   })
 }
