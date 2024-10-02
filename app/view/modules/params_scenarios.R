@@ -51,26 +51,27 @@ ui <- function(id) {
           )
         )
       )
-      # ,
-      # div(
-      #   class = "content",
-      #   p("Scenario Geography"),
-      #   div(
-      #     class = "description",
-      #     shiny.semantic::dropdown_input(ns("scenario_geography"),
-      #       choices = NULL
-      #     )
-      #   )
-      # )
+      ,
+      div(
+        class = "content",
+        p("Country choice"),
+        div(
+          class = "description",
+          shiny.semantic::dropdown_input(ns("country_choice"),
+            choices = NULL
+          )
+        )
+      )
     )
   )
 }
 
 server <- function(id,
                    hide_vars,
-                   possible_trisk_combinations) {
+                   possible_trisk_combinations,
+                   possible_countries) {
   moduleServer(id, function(input, output, session) {
-    
+
 
     # synchronise dropdown choices  with the possible combinations
     update_scenarios_dropdowns(
@@ -79,6 +80,8 @@ server <- function(id,
       hide_vars = hide_vars,
       possible_trisk_combinations = possible_trisk_combinations
     )
+
+    update_countries_dropdown(session=session, possible_countries)
 
 
     # Synchronise the scenarios available depending on user scenario choice
@@ -90,6 +93,11 @@ server <- function(id,
     selected_shock_r <- reactive({
       choice <- input$target_scenario
       renamed_choice <- rename_string_vector(choice, words_class = "scenarios", dev_to_ux = FALSE)
+      return(renamed_choice)
+    })
+    selected_country_r <- reactive({
+      choice <- input$country_choice
+      renamed_choice <- rename_string_vector(choice, words_class = "countries", dev_to_ux = FALSE)
       return(renamed_choice)
     })
 
@@ -122,7 +130,8 @@ update_scenarios_dropdowns <- function(input, session,
       dplyr::pull()
 
     # rename the scenarios to front end appropriate name
-    new_choices <- rename_string_vector(possible_baselines, words_class = "scenarios")
+    new_choices <- rename_string_vector(possible_baselines, words_class = "scenarios")|>
+      sort()
 
     # Update target_scenario dropdown with unique values from the filtered data
     update_dropdown_input(session, "baseline_scenario", choices = new_choices)
@@ -141,10 +150,22 @@ update_scenarios_dropdowns <- function(input, session,
 
 
     # rename the scenarios to front end appropriate name
-    new_choices <- rename_string_vector(possible_shocks, words_class = "scenarios")
+    new_choices <- rename_string_vector(possible_shocks, words_class = "scenarios")|>
+      sort()
 
     # Update target_scenario dropdown with unique values from the filtered data
     update_dropdown_input(session, "target_scenario", choices = new_choices)
   })
 
+}
+
+
+update_countries_dropdown <- function(session, possible_countries){
+  # Observe changes in possible_trisk_combinations and update baseline_scenario dropdown
+      # rename the scenarios to front end appropriate name
+    new_choices <- rename_string_vector(possible_countries, words_class = "countries")|>
+      sort()
+
+    # Update target_scenario dropdown with unique values from the filtered data
+    update_dropdown_input(session, "country_choice", choices = new_choices)
 }

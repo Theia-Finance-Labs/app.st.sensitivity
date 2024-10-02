@@ -1,5 +1,5 @@
 app/data/*
-!app/data/trisk_portfolio.xlsx
+!app/data/country_reference.csv
 
 # History files
 .Rhistory

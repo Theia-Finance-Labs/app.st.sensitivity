@@ -28,35 +28,35 @@ server <- function(
     scenarios_data,
     financial_data,
     carbon_data,
-    portfolio_data_r,
-    trisk_run_params_r) {
+    trisk_run_params_r, 
+    focus_country_r) {
   moduleServer(id, function(input, output, session) {
-    # TRISK COMPUTATION =========================
-    trisk_results_r <- reactiveVal(NULL)
 
+    
+    params_df_r <- reactiveVal(NULL)
+companies_trajectories_r<- reactiveVal(NULL)
     # fetch or compute trisk on button click
     shiny::observeEvent(input$run_trisk, ignoreNULL = T, {
       trisk_run_params <- shiny::reactiveValuesToList(trisk_run_params_r())
+      selected_country <- focus_country_r()
 
-      analysis_data <- do.call(
-        trisk.analysis::run_trisk_on_portfolio,
-        c(
-          trisk_run_params,
-          list(
+      st_results <- trisk.analysis::run_trisk_sa(
             assets_data = assets_data,
             scenarios_data = scenarios_data,
             financial_data = financial_data,
-            carbon_data = carbon_data,
-            portfolio_data = portfolio_data_r()
-          )
-        )
-      )
-
-      trisk_results_r(analysis_data)
+            carbon_data = carbon_data, 
+            run_params=trisk_run_params ,
+            country_iso2=selected_country)
+      
+browser()
+      
     })
 
     return(
-      trisk_results_r
+      list(
+            "params_df_r"=params_df_r,
+"companies_trajectories_r"=companies_trajectories_r
+      )
     )
   })
 }

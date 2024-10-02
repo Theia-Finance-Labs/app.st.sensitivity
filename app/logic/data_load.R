@@ -51,3 +51,11 @@ get_possible_trisk_combinations <- function(scenarios_data) {
 
   return(possible_trisk_combinations)
 }
+
+get_possible_countries <- function(assets_data) {
+  possible_countries <- assets_data |>
+    dplyr::distinct(.data$country_iso2) |>
+    dplyr::pull()
+  return(possible_countries)
+}
+

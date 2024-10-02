@@ -24,7 +24,7 @@ box::use(
     TRISK_POSTGRES_PORT,
     TRISK_POSTGRES_USER
   ],
-  app/logic/data_load[download_db_tables_postgres, get_possible_trisk_combinations],
+  app/logic/data_load[download_db_tables_postgres],
   app/view/display_params,
   app/view/sidebar_parameters,
   app/view/trisk_button,
@@ -41,7 +41,7 @@ ui <- function(id) {
     shinyjs::useShinyjs(), # Initialize shinyjs
     # CONTENT PAGE
     tags$div(
-      class = "header", # Add a loading overlay
+      class = "header", 
     ),
     dashboardPage(
       title = "Crispy",
@@ -87,7 +87,7 @@ ui <- function(id) {
       dashboardBody(
       shiny::tags$div(
         class = "ui stackable grid",
-NULL
+        display_params$ui(ns("display_params"))
         )
       )
     )
@@ -104,7 +104,7 @@ server <- function(id) {
     }
     if (length(dir(TRISK_INPUT_PATH)) == 0) { 
       tables <- c(
-        "assets",
+        "assets_sampled",
         "scenarios",
         "ngfs_carbon_price",
         "financial_features"
@@ -121,30 +121,40 @@ server <- function(id) {
       )
     }
 
-    assets_data <- readr::read_csv(file.path(TRISK_INPUT_PATH, "assets.csv"), show_col_types = FALSE)
+    assets_data <- readr::read_csv(file.path(TRISK_INPUT_PATH, "assets_sampled.csv"), show_col_types = FALSE)
     scenarios_data <- readr::read_csv(file.path(TRISK_INPUT_PATH, "scenarios.csv"), show_col_types = FALSE)
     financial_data <- readr::read_csv(file.path(TRISK_INPUT_PATH, "financial_features.csv"), show_col_types = FALSE)
     carbon_data <- readr::read_csv(file.path(TRISK_INPUT_PATH, "ngfs_carbon_price.csv"), show_col_types = FALSE)
 
-    possible_trisk_combinations <- get_possible_trisk_combinations(scenarios_data = scenarios_data) 
-    trisk_run_params_r <- sidebar_parameters$server(
+    
+    perimeter <- sidebar_parameters$server(
       "sidebar_parameters",
-      possible_trisk_combinations = possible_trisk_combinations,
+      scenarios_data = scenarios_data,
+      assets_data = assets_data,
       available_vars = AVAILABLE_VARS, 
       hide_vars = HIDE_VARS 
     )
+
+
+
+    trisk_run_params_r <- perimeter$trisk_run_params_r
+    focus_country_r <- perimeter$focus_country_r
+    
     
 
 
-    trisk_results_r <- trisk_button$server(
+    st_results_r <- trisk_button$server(
       "trisk_button",
       assets_data = assets_data,
       scenarios_data = scenarios_data,
       financial_data = financial_data,
       carbon_data = carbon_data,
-      portfolio_data_r = portfolio_data_r,
-      trisk_run_params_r = trisk_run_params_r
+      trisk_run_params_r = trisk_run_params_r,
+      focus_country_r=focus_country_r
     )
+    params_df_r <- st_results_r$params_df_r
+    companies_trajectories_r <- st_results_r$companies_trajectories_r
+    params_df_r <- display_params$server("display_params", params_df_r)
 
   })
 }

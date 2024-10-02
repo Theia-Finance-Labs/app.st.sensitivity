@@ -33,22 +33,15 @@ ui <- function(id, portfolio_class = "") {
 
 server <- function(
     id,
-    trisk_results_r) {
+    params_df_r) {
   moduleServer(id, function(input, output, session) {
 
-    observeEvent(trisk_results_r(), ignoreInit=TRUE, {
+    observeEvent(params_df_r(), ignoreInit=TRUE, {
         
-        table_to_display <- trisk_results_r() |>
-          trisk.analysis:::compute_analysis_metrics()|>
-          dplyr::select(.data$sector, .data$technology, .data$country_iso2, .data$exposure_value_usd, .data$term, .data$loss_given_default, .data$crispy_perc_value_change, .data$expected_loss_shock) |>
-          dplyr::rename(
-            npv_change = .data$crispy_perc_value_change,
-            expected_loss = expected_loss_shock
-            )
+        table_to_display <- params_df_r() 
 
-
-        # Hardcode the index for npv_change (which column it is, 0-based index)
-        colored_columns <- 7 # npv_change is in the 7th column, so index is 6 (0-based index)
+        # Hardcode the index for npv_change
+        colored_columns <- 7 # npv_change is in the 8th column, so index is 7 (0-based index)
 
 
         # Render the datatable
@@ -75,6 +68,7 @@ server <- function(
             class = "display compact" # Fit the table to the container
         )
       })
-})
+  })
+  return(params_df_r)
 
   })}

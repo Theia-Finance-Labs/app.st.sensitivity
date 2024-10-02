@@ -78,6 +78,14 @@ RENAMING_ANALYSIS_COLUMNS <- c(
 )
 
 
+countries_df <- readr::read_csv(file.path("app", "data", "country_reference.csv"),  show_col_types = FALSE)
+RENAMING_COUNTRIES_COLUMN <- countries_df |>
+  dplyr::distinct(country.name.en, iso2c) |>
+  dplyr::filter(!is.na(iso2c)) |>
+  dplyr::pull(country.name.en, name = iso2c)
+
+
+
 # function to rename a tibble columns
 # applies rename_string_vector to all column names of the tibble
 rename_tibble_columns <- function(table_to_rename, words_class, dev_to_ux = TRUE) {
@@ -94,7 +102,8 @@ rename_string_vector <- function(string_vector, words_class, dev_to_ux = TRUE) {
 
   renaming_classes <- list(
     "scenarios" = RENAMING_SCENARIOS,
-    "analysis_columns" = RENAMING_ANALYSIS_COLUMNS
+    "analysis_columns" = RENAMING_ANALYSIS_COLUMNS,
+    "countries" = RENAMING_COUNTRIES_COLUMN
   )
 
   if (words_class %in% names(renaming_classes)) {
@@ -102,14 +111,25 @@ rename_string_vector <- function(string_vector, words_class, dev_to_ux = TRUE) {
 
 
     if (dev_to_ux) {
-      if (all(string_vector %in% names(RENAMING))) {
-        string_vector <- unname(RENAMING[string_vector])
-      }
+      string_vector <- sapply(string_vector, function(x) {
+        if (x %in% names(RENAMING)) {
+          RENAMING[[x]]
+        } else {
+          x
+        }
+      }, USE.NAMES = FALSE)
     } else {
-      if (all(string_vector %in% unname(RENAMING))) {
+      
         REV_RENAMING <- stats::setNames(names(RENAMING), unname(RENAMING))
-        string_vector <- unname(REV_RENAMING[string_vector])
-      }
+        
+          string_vector <- sapply(string_vector, function(x) {
+            if (x %in% names(REV_RENAMING)) {
+              REV_RENAMING[[x]]
+            } else {
+              x
+            }
+          }, USE.NAMES = FALSE)
+      
     }
   } else {
     stop("Class not handled for renaming")
