@@ -47,7 +47,7 @@ ui <- function(id) {
     dashboardPage(
       title = "Crispy",
       # dashboardHeader
-      dashboardHeader(title = "Portfolio ST"),
+      dashboardHeader(title = "Sensitivity Analysis"),
       # dashboardSidebar
       dashboardSidebar(
         # Data Section
@@ -156,7 +156,7 @@ server <- function(id) {
     displayed_params <- display_params$server("display_params", params_df_r, companies_trajectories_r)
 
     displayed_params_df_r <- displayed_params$displayed_params_df_r
-    displayed_trajectories_r <- displayed_params$displayed_trajectories_r
+    displayed_trajectories_r <- displayed_params$companies_trajectories_r
 
     # Generate trajectories plots
     plots_trajectories$server(
