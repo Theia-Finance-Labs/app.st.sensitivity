@@ -2,13 +2,13 @@ box::use(
   semantic.dashboard[dashboardBody, dashboardHeader, dashboardPage, dashboardSidebar],
   shiny[
     div,
+    HTML,
     img,
     moduleServer,
     NS,
     renderUI,
     tags,
-    uiOutput,
-    HTML
+    uiOutput
   ],
   shiny.semantic[semanticPage],
   shinyjs[useShinyjs],
@@ -27,9 +27,9 @@ box::use(
   ],
   app/logic/data_load[download_db_tables_postgres],
   app/view/display_params,
+  app/view/plots_trajectories,
   app/view/sidebar_parameters,
   app/view/trisk_button,
-  app/view/plots_trajectories
 )
 
 
@@ -41,7 +41,7 @@ ui <- function(id) {
 
   shiny.semantic::semanticPage(
     shinyjs::useShinyjs(), # Initialize shinyjs
-        tags$div(
+    tags$div(
       class = "header", # Add a loading overlay
       tags$head(
         tags$style(HTML("
@@ -104,10 +104,10 @@ ui <- function(id) {
 
       # dashboardBody
       dashboardBody(
-      shiny::tags$div(
-        class = "ui stackable grid",
-        display_params$ui(ns("display_params")),
-        plots_trajectories$ui(ns("plots_trajectories"))
+        shiny::tags$div(
+          class = "ui stackable grid",
+          display_params$ui(ns("display_params")),
+          plots_trajectories$ui(ns("plots_trajectories"))
         )
       )
     )
@@ -119,10 +119,10 @@ ui <- function(id) {
 #' @export
 server <- function(id) {
   moduleServer(id, function(input, output, session) {
-    if (!dir.exists(TRISK_INPUT_PATH)) { 
-      dir.create(TRISK_INPUT_PATH) 
+    if (!dir.exists(TRISK_INPUT_PATH)) {
+      dir.create(TRISK_INPUT_PATH)
     }
-    if (length(dir(TRISK_INPUT_PATH)) == 0) { 
+    if (length(dir(TRISK_INPUT_PATH)) == 0) {
       tables <- c(
         "assets_sampled",
         "scenarios",
@@ -131,7 +131,7 @@ server <- function(id) {
       )
 
       download_db_tables_postgres(
-        save_dir = TRISK_INPUT_PATH, 
+        save_dir = TRISK_INPUT_PATH,
         tables = tables,
         dbname = TRISK_POSTGRES_DB,
         host = TRISK_POSTGRES_HOST,
@@ -146,13 +146,13 @@ server <- function(id) {
     financial_data <- readr::read_csv(file.path(TRISK_INPUT_PATH, "financial_features.csv"), show_col_types = FALSE)
     carbon_data <- readr::read_csv(file.path(TRISK_INPUT_PATH, "ngfs_carbon_price.csv"), show_col_types = FALSE)
 
-    
+
     perimeter <- sidebar_parameters$server(
       "sidebar_parameters",
       scenarios_data = scenarios_data,
       assets_data = assets_data,
-      available_vars = AVAILABLE_VARS, 
-      hide_vars = HIDE_VARS 
+      available_vars = AVAILABLE_VARS,
+      hide_vars = HIDE_VARS
     )
 
     trisk_run_params_r <- perimeter$trisk_run_params_r
@@ -165,12 +165,12 @@ server <- function(id) {
       financial_data = financial_data,
       carbon_data = carbon_data,
       trisk_run_params_r = trisk_run_params_r,
-      selected_country_r=selected_country_r
+      selected_country_r = selected_country_r
     )
 
     params_df_r <- st_results_r$params_df_r
     companies_trajectories_r <- st_results_r$companies_trajectories_r
-    
+
     displayed_params <- display_params$server("display_params", params_df_r, companies_trajectories_r)
 
     displayed_params_df_r <- displayed_params$displayed_params_df_r
@@ -181,6 +181,6 @@ server <- function(id) {
       "plots_trajectories",
       trajectories_data_r = displayed_trajectories_r
     )
-shinyjs::runjs('$("#loading-overlay").hide();')
+    shinyjs::runjs('$("#loading-overlay").hide();')
   })
 }

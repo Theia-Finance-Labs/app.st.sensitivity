@@ -78,7 +78,7 @@ RENAMING_ANALYSIS_COLUMNS <- c(
 )
 
 
-countries_df <- readr::read_csv(file.path("app", "data", "country_reference.csv"),  show_col_types = FALSE)
+countries_df <- readr::read_csv(file.path("app", "data", "country_reference.csv"), show_col_types = FALSE)
 RENAMING_COUNTRIES_COLUMN <- countries_df |>
   dplyr::distinct(country.name.en, iso2c) |>
   dplyr::filter(!is.na(iso2c)) |>
@@ -119,17 +119,15 @@ rename_string_vector <- function(string_vector, words_class, dev_to_ux = TRUE) {
         }
       }, USE.NAMES = FALSE)
     } else {
-      
-        REV_RENAMING <- stats::setNames(names(RENAMING), unname(RENAMING))
-        
-          string_vector <- sapply(string_vector, function(x) {
-            if (x %in% names(REV_RENAMING)) {
-              REV_RENAMING[[x]]
-            } else {
-              x
-            }
-          }, USE.NAMES = FALSE)
-      
+      REV_RENAMING <- stats::setNames(names(RENAMING), unname(RENAMING))
+
+      string_vector <- sapply(string_vector, function(x) {
+        if (x %in% names(REV_RENAMING)) {
+          REV_RENAMING[[x]]
+        } else {
+          x
+        }
+      }, USE.NAMES = FALSE)
     }
   } else {
     stop("Class not handled for renaming")

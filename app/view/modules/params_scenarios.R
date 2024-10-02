@@ -50,8 +50,7 @@ ui <- function(id) {
             choices = NULL
           )
         )
-      )
-      ,
+      ),
       div(
         class = "content",
         p("Country choice"),
@@ -71,8 +70,6 @@ server <- function(id,
                    possible_trisk_combinations,
                    possible_countries) {
   moduleServer(id, function(input, output, session) {
-
-
     # synchronise dropdown choices  with the possible combinations
     update_scenarios_dropdowns(
       input = input,
@@ -81,7 +78,7 @@ server <- function(id,
       possible_trisk_combinations = possible_trisk_combinations
     )
 
-    update_countries_dropdown(session=session, possible_countries)
+    update_countries_dropdown(session = session, possible_countries)
 
 
     # Synchronise the scenarios available depending on user scenario choice
@@ -106,7 +103,7 @@ server <- function(id,
       reactiveValues(
         baseline_scenario = selected_baseline_r(),
         target_scenario = selected_shock_r(),
-selected_country_r=selected_country_r()
+        selected_country_r = selected_country_r()
       )
     })
 
@@ -133,9 +130,9 @@ update_scenarios_dropdowns <- function(input, session,
     # rename the scenarios to front end appropriate name
     # new_choices <- rename_string_vector(possible_baselines, words_class = "scenarios")|>
     #   sort()
-    new_choices <- possible_baselines|>sort()
-    
-        # Update target_scenario dropdown with unique values from the filtered data
+    new_choices <- possible_baselines |> sort()
+
+    # Update target_scenario dropdown with unique values from the filtered data
     update_dropdown_input(session, "baseline_scenario", choices = new_choices)
   })
 
@@ -154,21 +151,20 @@ update_scenarios_dropdowns <- function(input, session,
     # # rename the scenarios to front end appropriate name
     # new_choices <- rename_string_vector(possible_shocks, words_class = "scenarios")|>
     #   sort()
-    new_choices <- possible_shocks|>sort()
+    new_choices <- possible_shocks |> sort()
 
     # Update target_scenario dropdown with unique values from the filtered data
     update_dropdown_input(session, "target_scenario", choices = new_choices)
   })
-
 }
 
 
-update_countries_dropdown <- function(session, possible_countries){
+update_countries_dropdown <- function(session, possible_countries) {
   # Observe changes in possible_trisk_combinations and update baseline_scenario dropdown
-      # rename the scenarios to front end appropriate name
-    new_choices <- rename_string_vector(possible_countries, words_class = "countries")|>
-      sort()
+  # rename the scenarios to front end appropriate name
+  new_choices <- rename_string_vector(possible_countries, words_class = "countries") |>
+    sort()
 
-    # Update target_scenario dropdown with unique values from the filtered data
-    update_dropdown_input(session, "country_choice", choices = new_choices)
+  # Update target_scenario dropdown with unique values from the filtered data
+  update_dropdown_input(session, "country_choice", choices = new_choices)
 }

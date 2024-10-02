@@ -1,5 +1,5 @@
 box::use(
-  shiny[moduleServer, NS, tagList, plotOutput, uiOutput, observeEvent, renderPlot]
+  shiny[moduleServer, NS, observeEvent, plotOutput, renderPlot, tagList, uiOutput],
 )
 
 

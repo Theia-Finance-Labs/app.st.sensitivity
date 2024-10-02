@@ -1,5 +1,4 @@
 download_db_tables_postgres <- function(conn, tables, save_dir, dbname, host, port, user, password) {
-  
   conn <- DBI::dbConnect(
     RPostgres::Postgres(),
     dbname = dbname,
@@ -58,4 +57,3 @@ get_possible_countries <- function(assets_data) {
     dplyr::pull()
   return(possible_countries)
 }
-

@@ -21,10 +21,10 @@ box::use(
 )
 
 box::use(
+  app/logic/data_load[get_possible_countries, get_possible_trisk_combinations],
   app/logic/renamings[rename_string_vector],
-  app/logic/data_load[get_possible_trisk_combinations, get_possible_countries],
   app/view/modules/params_scenarios,
-  app/view/modules/params_trisk
+  app/view/modules/params_trisk,
 )
 
 
@@ -97,16 +97,15 @@ server <- function(id,
                    available_vars,
                    hide_vars) {
   moduleServer(id, function(input, output, session) {
-
-    possible_trisk_combinations <- get_possible_trisk_combinations(scenarios_data = scenarios_data) 
-    possible_countries <- get_possible_countries(assets_data = assets_data) 
+    possible_trisk_combinations <- get_possible_trisk_combinations(scenarios_data = scenarios_data)
+    possible_countries <- get_possible_countries(assets_data = assets_data)
 
     # get scenario config
     scenario_config_r <- params_scenarios$server(
       "params_scenarios",
       hide_vars = hide_vars,
       possible_trisk_combinations = possible_trisk_combinations,
-      possible_countries=possible_countries
+      possible_countries = possible_countries
     )
 
     # get other trisk params confid
@@ -129,13 +128,15 @@ server <- function(id,
       )
     })
 
-    selected_country_r <- shiny::reactive({scenario_config_r()$selected_country_r})
+    selected_country_r <- shiny::reactive({
+      scenario_config_r()$selected_country_r
+    })
 
 
     return(
       list(
-        "trisk_run_params_r"=trisk_run_params_r,
-        "selected_country_r" =selected_country_r
+        "trisk_run_params_r" = trisk_run_params_r,
+        "selected_country_r" = selected_country_r
       )
     )
   })
