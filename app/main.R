@@ -124,7 +124,7 @@ server <- function(id) {
     }
     if (length(dir(TRISK_INPUT_PATH)) == 0) {
       tables <- c(
-        "assets_sampled",
+        "assets",
         "scenarios",
         "ngfs_carbon_price",
         "financial_features"
@@ -141,7 +141,7 @@ server <- function(id) {
       )
     }
 
-    assets_data <- readr::read_csv(file.path(TRISK_INPUT_PATH, "assets_sampled.csv"), show_col_types = FALSE)
+    assets_data <- readr::read_csv(file.path(TRISK_INPUT_PATH, "assets.csv"), show_col_types = FALSE)
     scenarios_data <- readr::read_csv(file.path(TRISK_INPUT_PATH, "scenarios.csv"), show_col_types = FALSE)
     financial_data <- readr::read_csv(file.path(TRISK_INPUT_PATH, "financial_features.csv"), show_col_types = FALSE)
     carbon_data <- readr::read_csv(file.path(TRISK_INPUT_PATH, "ngfs_carbon_price.csv"), show_col_types = FALSE)
