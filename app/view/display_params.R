@@ -14,26 +14,31 @@ box::use(
     reactiveValues,
     selectizeInput,
     tags,
-    updateSelectizeInput
+    updateSelectizeInput,
+    downloadHandler,
+    downloadButton
   ],
   shiny.semantic[button, segment, semanticPage],
   shinyjs[runjs, useShinyjs],
+  writexl[write_xlsx]  # Import writexl for Excel files
 )
 
+# Define UI
 ui <- function(id, portfolio_class = "") {
   ns <- NS(id)
   semantic.dashboard:::box(
     title = "Trisk Runs", width = 16, collapsible = TRUE,
     div(
       DT::dataTableOutput(outputId = ns("portfolio_table")),
-      shiny.semantic::button(ns("delete_selected"), "Delete Selected", class = "red")
+      shiny.semantic::button(ns("delete_selected"), "Delete Selected", class = "red"),
+      div(style = "margin-top: 10px;",
+        shiny::downloadButton(ns("download_btn"), "Download Excel")  # Correct outputId for download button
+      )
     )
   )
 }
-server <- function(
-    id,
-    params_df_r,
-    companies_trajectories_r) {
+# Define Server Logic
+server <- function(id, params_df_r, companies_trajectories_r) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
@@ -89,6 +94,50 @@ server <- function(
         companies_trajectories_r(new_trajectories_df)
       }
     })
+
+    # Reactive value for trajectories_df
+    trajectories_df <- reactive({
+      # Prepare the initial dataframe using the function
+      df <- trisk.analysis:::prepare_for_trisk_line_plot(companies_trajectories_r(), 
+                                                        facet_var = "technology", 
+                                                        linecolor = "run_id")
+      
+      # Pivot the table so that run_id becomes columns and production values are spread across those columns
+      df_pivoted <- df |>
+        dplyr::select(.data$technology, .data$year, .data$run_id, .data$production_pct) |>  # Select relevant columns
+        dplyr::mutate(production_pct=.data$production_pct/100) |>
+        tidyr::pivot_wider(names_from = .data$run_id, values_from = .data$production_pct)  # Pivot the table
+
+      return(df_pivoted)
+    })
+
+
+    # Download handler for Excel file with a sheet per unique technology
+    output$download_btn <- shiny::downloadHandler(
+      filename = function() {
+        paste("trisk_data_", Sys.Date(), "_", format(Sys.time(), "%H-%M-%S"), ".xlsx", sep = "")
+      },
+      content = function(file) {
+        # Prepare data for each unique technology
+        trajectories_sheet <- trajectories_df()
+        
+        # Split by unique technology
+        tech_sheets <- trajectories_sheet |>
+          dplyr::group_split(.data$technology)
+
+        # Create a named list for writexl
+        tech_sheets_list <- purrr::map(tech_sheets, ~{
+          tech_name <- unique(.x$technology)
+          .x
+        }) |> purrr::set_names(purrr::map_chr(tech_sheets, ~ unique(.x$technology)))
+        
+        # Add Params sheet
+        tech_sheets_list[["Params"]] <- displayed_params_df_r()
+
+        # Use writexl to write multiple sheets into a single Excel file
+        writexl::write_xlsx(tech_sheets_list, path = file)
+      }
+    )
 
     # Return the updated values
     return(list(
