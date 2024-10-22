@@ -98,10 +98,10 @@ server <- function(id, params_df_r, companies_trajectories_r) {
     # Reactive value for trajectories_df
     trajectories_df <- reactive({
       # Prepare the initial dataframe using the function
-      df <- trisk.analysis:::prepare_for_trisk_line_plot(companies_trajectories_r(), 
-                                                        facet_var = "technology", 
+      df <- trisk.analysis:::prepare_for_trisk_line_plot(companies_trajectories_r(),
+                                                        facet_var = "technology",
                                                         linecolor = "run_id")
-      
+
       # Pivot the table so that run_id becomes columns and production values are spread across those columns
       df_pivoted <- df |>
         dplyr::select(.data$technology, .data$year, .data$run_id, .data$production_pct) |>  # Select relevant columns
@@ -115,12 +115,12 @@ server <- function(id, params_df_r, companies_trajectories_r) {
     # Download handler for Excel file with a sheet per unique technology
     output$download_btn <- shiny::downloadHandler(
       filename = function() {
-        paste("trisk_data_", Sys.Date(), "_", format(Sys.time(), "%H-%M-%S"), ".xlsx", sep = "")
+        paste("trisk_sensitivity_", Sys.Date(), "_", format(Sys.time(), "%H-%M-%S"), ".xlsx", sep = "")
       },
       content = function(file) {
         # Prepare data for each unique technology
         trajectories_sheet <- trajectories_df()
-        
+
         # Split by unique technology
         tech_sheets <- trajectories_sheet |>
           dplyr::group_split(.data$technology)
@@ -130,7 +130,7 @@ server <- function(id, params_df_r, companies_trajectories_r) {
           tech_name <- unique(.x$technology)
           .x
         }) |> purrr::set_names(purrr::map_chr(tech_sheets, ~ unique(.x$technology)))
-        
+
         # Add Params sheet
         tech_sheets_list[["Params"]] <- displayed_params_df_r()
 
