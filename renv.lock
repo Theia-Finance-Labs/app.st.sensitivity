@@ -1574,14 +1574,14 @@
     },
     "trisk.analysis": {
       "Package": "trisk.analysis",
-      "Version": "1.0.0",
+      "Version": "1.2.0",
       "Source": "GitHub",
       "RemoteType": "github",
+      "RemoteHost": "api.github.com",
       "RemoteUsername": "Theia-Finance-Labs",
       "RemoteRepo": "trisk.analysis",
       "RemoteRef": "main",
-      "RemoteSha": "0ec51dd83943d43b5f27f19785c3f9c803c0d23a",
-      "RemoteHost": "api.github.com",
+      "RemoteSha": "d96fd036fa5e2e6e7a55c040ec3f970719ae90ab",
       "Requirements": [
         "dplyr",
         "ggplot2",
@@ -1594,18 +1594,18 @@
         "trisk.model",
         "uuid"
       ],
-      "Hash": "d31bea62d4e3ca8669d34fcecbf6d01d"
+      "Hash": "369adfa4f4490eacd0968e11fe123fe8"
     },
     "trisk.model": {
       "Package": "trisk.model",
-      "Version": "2.6.0",
+      "Version": "2.6.1",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "Theia-Finance-Labs",
       "RemoteRepo": "trisk.model",
       "RemoteRef": "main",
-      "RemoteSha": "33668ca643e0a4843a09a94af856c971b9fd9647",
+      "RemoteSha": "a304f4077f5742cf4cd4f4eb32444a37ed338431",
       "Requirements": [
         "R",
         "dplyr",
@@ -1620,7 +1620,7 @@
         "uuid",
         "zoo"
       ],
-      "Hash": "e0e56fb9e150d30d25f05470826ecbc4"
+      "Hash": "80ab17c98ac35eb8d6d4a24c095359ed"
     },
     "tzdb": {
       "Package": "tzdb",
@@ -1731,6 +1731,13 @@
         "graphics"
       ],
       "Hash": "07909200e8bbe90426fbfeb73e1e27aa"
+    },
+    "writexl": {
+      "Package": "writexl",
+      "Version": "1.5.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "3eb948ad9591d7b34987772d44e4be12"
     },
     "xfun": {
       "Package": "xfun",
